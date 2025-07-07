@@ -23,7 +23,7 @@ def generate_public_key(privkey: ec.EllipticCurvePrivateKey) -> ec.EllipticCurve
         privkey (ec.EllipticCurvePrivateKey): A previously generated private key.
 
     Returns:
-        Ed25519PublicKey: The public key that was generated
+        ec.EllipticCurvePublicKey: The public key that was generated
     """
     digest = hashes.SHA256()
     hasher = hashes.Hash(digest)
@@ -33,11 +33,11 @@ def generate_public_key(privkey: ec.EllipticCurvePrivateKey) -> ec.EllipticCurve
 
 
 def sign(key: ec.EllipticCurvePrivateKey, data_file) -> bytes:
-    """ECDSA Signing for files. Uses SHA3-512 For hashing
+    """ECDSA Signing for files. Uses SHA3-512 for hashing.
 
     Args:
         key (ec.EllipticCurvePrivateKey): Private key for signing
-        data_file (_type_): File that needs signing
+        data_file (File object): File that needs signing
 
     Returns:
         bytes: Signature
@@ -54,6 +54,16 @@ def sign(key: ec.EllipticCurvePrivateKey, data_file) -> bytes:
 
 
 def verify(key: ec.EllipticCurvePublicKey, data_file, signature: bytes) -> bool:
+    """ECDSA Verification for files. Uses SHA3-512 for hashing.
+
+    Args:
+        key (ec.EllipticCurvePublicKey): Public key for verification
+        data_file (File object): The file that needs verification
+        signature (bytes): The signature that needs verification
+
+    Returns:
+        bool: False if verification failed, True if it's a valid signature
+    """
     # Hashing file
     digest = __hash(data_file=data_file)
 
@@ -69,6 +79,7 @@ def verify(key: ec.EllipticCurvePublicKey, data_file, signature: bytes) -> bool:
 
 
 def __hash(data_file) -> bytes:
+    """ Auxiliary hash function for curve module """
     data_file.seek(0)
 
     # Hashing file
