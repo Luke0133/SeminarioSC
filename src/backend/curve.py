@@ -79,7 +79,15 @@ def verify(key: ec.EllipticCurvePublicKey, data_file, signature: bytes) -> bool:
 
 
 def serialize_private_key(key: ec.EllipticCurvePrivateKey, password: bytes) -> bytes:
+    """Serialization for Elliptic Curve private keys using a password for encrypting the data
 
+    Args:
+        key (ec.EllipticCurvePrivateKey): The key to be serialized.
+        password (bytes): The password to be used for encryption of the key. It is cleared from memory after use
+
+    Returns:
+        bytes: The serialized PEM formatted key, ready to be written to a file.
+    """
     serialized_private = key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
@@ -92,7 +100,14 @@ def serialize_private_key(key: ec.EllipticCurvePrivateKey, password: bytes) -> b
 
 
 def serialize_public_key(key: ec.EllipticCurvePublicKey) -> bytes:
+    """Serialization for Elliptic Curve public keys
 
+    Args:
+        key (ec.EllipticCurvePublicKey): The key to be serialized
+
+    Returns:
+        bytes: The serialized PEM formatted key, ready to be written to a file.
+    """
     serialized_public = key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
@@ -102,6 +117,14 @@ def serialize_public_key(key: ec.EllipticCurvePublicKey) -> bytes:
 
 
 def load_public_key(serialized_key_file) -> ec.EllipticCurvePublicKey:
+    """Loading for public keys serialized into PEM format files
+
+    Args:
+        serialized_key_file (File object): The file object containing the serialized key
+
+    Returns:
+        ec.EllipticCurvePublicKey: The public key
+    """
     serialized_key_data = serialized_key_file.read()
 
     public_key = serialization.load_pem_public_key(
@@ -111,6 +134,15 @@ def load_public_key(serialized_key_file) -> ec.EllipticCurvePublicKey:
 
 
 def load_private_key(serialized_key_file, password: bytes) -> ec.EllipticCurvePrivateKey:
+    """Loading for public keys serialized into PEM format files (requires password)
+
+    Args:
+        serialized_key_file (File object): The file object containing the serialized key
+        password (bytes): The password for decrypting the key
+
+    Returns:
+        ec.EllipticCurvePrivateKey: The private key
+    """
     serialized_key_data = serialized_key_file.read()
 
     private_key = serialization.load_pem_private_key(
