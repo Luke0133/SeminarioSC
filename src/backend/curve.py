@@ -111,7 +111,6 @@ def serialize_public_key(key: ec.EllipticCurvePublicKey) -> bytes:
     serialized_public = key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.BestAvailableEncryption(password)
     )
     return serialized_public
 
