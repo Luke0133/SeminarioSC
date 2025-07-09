@@ -78,6 +78,48 @@ def verify(key: ec.EllipticCurvePublicKey, data_file, signature: bytes) -> bool:
     return True
 
 
+def serialize_private_key(key: ec.EllipticCurvePrivateKey, password: bytes) -> bytes:
+
+    serialized_private = key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.BestAvailableEncryption(password)
+    )
+    # clear password from memory
+    for i in range(0, len(password)):
+        password[i] = 0
+    return serialized_private
+
+
+def serialize_public_key(key: ec.EllipticCurvePublicKey) -> bytes:
+
+    serialized_public = key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.BestAvailableEncryption(password)
+    )
+    return serialized_public
+
+
+def load_public_key(serialized_key_file) -> ec.EllipticCurvePublicKey:
+    serialized_key_data = serialized_key_file.read()
+
+    public_key = serialization.load_pem_public_key(
+        serialized_key_data
+    )
+    return public_key
+
+
+def load_private_key(serialized_key_file, password: bytes) -> ec.EllipticCurvePrivateKey:
+    serialized_key_data = serialized_key_file.read()
+
+    private_key = serialization.load_pem_private_key(
+        serialized_key_data,
+        password=password
+    )
+    return private_key
+
+
 def __hash(data_file) -> bytes:
     """ Auxiliary hash function for curve module """
     data_file.seek(0)
