@@ -93,9 +93,7 @@ def serialize_private_key(key: ec.EllipticCurvePrivateKey, password: bytes) -> b
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.BestAvailableEncryption(password)
     )
-    # clear password from memory
-    for i in range(0, len(password)):
-        password[i] = 0
+
     return serialized_private
 
 
@@ -108,9 +106,9 @@ def serialize_public_key(key: ec.EllipticCurvePublicKey) -> bytes:
     Returns:
         bytes: The serialized PEM formatted key, ready to be written to a file.
     """
-    serialized_public = key.private_bytes(
+    serialized_public = key.public_bytes(
         encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
     return serialized_public
 
