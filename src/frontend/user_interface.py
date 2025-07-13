@@ -61,6 +61,7 @@ def abrir_janela_assinatura():
     y = (janela.winfo_screenheight() // 2) - (altura // 2)
     janela.geometry(f"{largura}x{altura}+{x}+{y}")
     janela.resizable(False, False)
+    janela.wait_visibility()
     janela.grab_set()
     janela.grid_columnconfigure(0, weight=1)
 
@@ -108,12 +109,12 @@ def abrir_janela_assinatura():
             try:
                 if arquivo_selecionado:
                     op.sign_file(assinatura, arquivo_selecionado, chave_privada)
-                    messagebox.showinfo("Sucesso", f"Arquivo assinado com sucesso.\nNome do arquivo: {os.path.basename(arquivo_selecionado)}")
+                    messagebox.showinfo("Sucesso", f"Arquivo assinado com sucesso.\nNome do arquivo: {os.path.basename(arquivo_selecionado)}", parent=janela)
                     janela.destroy()
                 else:
-                    messagebox.showerror("Erro", "Nenhum arquivo selecionado")
+                    messagebox.showerror("Erro", "Nenhum arquivo selecionado", parent=janela)
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao assinar arquivo: {str(e)}")
+                messagebox.showerror("Erro", f"Erro ao assinar arquivo: {str(e)}", parent=janela)
 
     botao_concluir = ctk.CTkButton(
         janela,
@@ -135,6 +136,7 @@ def abrir_janela_gerar_chaves():
     y = (janela.winfo_screenheight() // 2) - (altura // 2)
     janela.geometry(f"{largura}x{altura}+{x}+{y}")
     janela.resizable(False, False)
+    janela.wait_visibility()
     janela.grab_set()
     janela.grid_columnconfigure(0, weight=1)
 
@@ -151,10 +153,10 @@ def abrir_janela_gerar_chaves():
         else:
             try:
                 op.generate_keys(senha)
-                messagebox.showinfo("Sucesso", "Chaves geradas com sucesso!")
+                messagebox.showinfo("Sucesso", "Chaves geradas com sucesso!", parent=janela)
                 janela.destroy()
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao gerar chaves: {str(e)}")
+                messagebox.showerror("Erro", f"Erro ao gerar chaves: {str(e)}", parent=janela)
 
     botao_gerar = ctk.CTkButton(
         janela,
@@ -175,6 +177,7 @@ def abrir_janela_verificacao():
     y = (janela.winfo_screenheight() // 2) - (altura // 2)
     janela.geometry(f"{largura}x{altura}+{x}+{y}")
     janela.resizable(False, False)
+    janela.wait_visibility()
     janela.grab_set()
     janela.grid_columnconfigure(0, weight=1)
 
@@ -217,19 +220,19 @@ def abrir_janela_verificacao():
                 # Verificar se o arquivo de assinatura existe
                 sig_path = arquivo_selecionado + ".sig"
                 if not os.path.exists(sig_path):
-                    messagebox.showerror("Erro", "Arquivo de assinatura não encontrado. O arquivo deve ter sido assinado primeiro.")
+                    messagebox.showerror("Erro", "Arquivo de assinatura não encontrado. O arquivo deve ter sido assinado primeiro.", parent=janela)
                     return
-                
+
                 # Chamar a função de verificação do backend
                 resultado = op.verify_file(arquivo_selecionado, sig_path, chave_publica)
-                
+
                 if resultado:
-                    messagebox.showinfo("Assinatura Válida", "Arquivo assinado corretamente e a assinatura é válida.")
+                    messagebox.showinfo("Assinatura Válida", "Arquivo assinado corretamente e a assinatura é válida.", parent=janela)
                 else:
-                    messagebox.showerror("Assinatura Inválida", "A assinatura do arquivo não é válida ou foi corrompida.")
+                    messagebox.showerror("Assinatura Inválida", "A assinatura do arquivo não é válida ou foi corrompida.", parent=janela)
                 janela.destroy()
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao verificar assinatura: {str(e)}")
+                messagebox.showerror("Erro", f"Erro ao verificar assinatura: {str(e)}", parent=janela)
 
     botao_verificar_assinatura = ctk.CTkButton(
         janela,

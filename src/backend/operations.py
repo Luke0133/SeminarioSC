@@ -17,19 +17,27 @@ def generate_keys(password : bytearray):
     projeto_dir = os.path.abspath(os.path.join(current_dir, ".."))
     pasta_pub = os.path.abspath(os.path.join(projeto_dir, "pub"))
     pasta_priv = os.path.abspath(os.path.join(projeto_dir, "priv"))
-    
+
     pub_path = os.path.join(pasta_pub, f"{now + '-pub.pem'}")
-    with open(pub_path, "wb") as f:
+
+    if not os.path.exists(pasta_pub):
+        os.makedirs(pasta_pub)
+
+    with open(pub_path, "wb+") as f:
         f.write(ser_pub)
 
     priv_path = os.path.join(pasta_priv, f"{now + '-priv.pem'}")
-    with open(priv_path, "wb") as f:
+
+    if not os.path.exists(pasta_priv):
+        os.makedirs(pasta_priv)
+
+    with open(priv_path, "wb+") as f:
         f.write(ser_priv)
 
     # Clearing password from memory
     for i in range(0, len(password)):
         password[i] = 0
-    
+
     return
 
 # Signs a document
@@ -39,7 +47,7 @@ def sign_file(password : bytearray, file_path,priv_path) -> bytes:
 
     with open(file_path, "rb") as f:
         signature = sign.sign(priv, f)
-        
+
     for i in range(len(password)):
         password[i] = 0
 
