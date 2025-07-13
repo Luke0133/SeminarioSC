@@ -78,12 +78,12 @@ def verify(key: ec.EllipticCurvePublicKey, data_file, signature: bytes) -> bool:
     return True
 
 
-def serialize_private_key(key: ec.EllipticCurvePrivateKey, password: bytes) -> bytes:
+def serialize_private_key(key: ec.EllipticCurvePrivateKey, password: bytearray) -> bytes:
     """Serialization for Elliptic Curve private keys using a password for encrypting the data
 
     Args:
         key (ec.EllipticCurvePrivateKey): The key to be serialized.
-        password (bytes): The password to be used for encryption of the key. It is cleared from memory after use
+        password (bytearray): The password to be used for encryption of the key. It is cleared from memory after use
 
     Returns:
         bytes: The serialized PEM formatted key, ready to be written to a file.
@@ -91,8 +91,11 @@ def serialize_private_key(key: ec.EllipticCurvePrivateKey, password: bytes) -> b
     serialized_private = key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.BestAvailableEncryption(password)
+        encryption_algorithm=serialization.BestAvailableEncryption(bytes(password))
     )
+
+    for i in range(0, len(password)):
+        password[i] = 0
 
     return serialized_private
 
@@ -130,7 +133,7 @@ def load_public_key(serialized_key_file) -> ec.EllipticCurvePublicKey:
     return public_key
 
 
-def load_private_key(serialized_key_file, password: bytes) -> ec.EllipticCurvePrivateKey:
+def load_private_key(serialized_key_file, password: bytearray) -> ec.EllipticCurvePrivateKey:
     """Loading for public keys serialized into PEM format files (requires password)
 
     Args:
@@ -144,8 +147,12 @@ def load_private_key(serialized_key_file, password: bytes) -> ec.EllipticCurvePr
 
     private_key = serialization.load_pem_private_key(
         serialized_key_data,
-        password=password
+        password=bytes(password)
     )
+  
+    for i in range(0, len(password)):
+        password[i] = 0
+
     return private_key
 
 
