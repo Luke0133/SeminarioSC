@@ -70,10 +70,12 @@ def abrir_janela_assinatura():
     entrada_senha = ctk.CTkEntry(janela, width=300)
     entrada_senha.grid(row=1, column=0, pady=5)
 
+    chave_privada = None
     label_chave = ctk.CTkLabel(janela, text="Nenhuma chave selecionada", font=ctk.CTkFont(size=14))
     label_chave.grid(row=2, column=0, pady=(10, 5))
 
     def escolher_chave_privada():
+        nonlocal chave_privada
         filepath = filedialog.askopenfilename(
             initialdir=pasta_priv,
             title="Selecione a chave privada (.pem)",
@@ -100,11 +102,18 @@ def abrir_janela_assinatura():
         assinatura = bytearray(entrada_senha.get().encode('utf-8'))
         if assinatura.decode(encoding="utf-8").strip() == "":
             messagebox.showwarning("Senha Inválida", "Por favor, digite sua senha.")
-        elif not chave_privada:
+        elif chave_privada is None:
             messagebox.showwarning("Chave Privada", "Por favor, selecione a chave privada.")
         else:
-            messagebox.showinfo("Sucesso", f"Arquivo assinado com sucesso.\nNome do arquivo: {arquivo_selecionado.split('/')[-1]}") #o local a ser salvo vai ser onde o arquivo original estava
-            janela.destroy()
+            try:
+                if arquivo_selecionado:
+                    op.sign_file(assinatura, arquivo_selecionado, chave_privada)
+                    messagebox.showinfo("Sucesso", f"Arquivo assinado com sucesso.\nNome do arquivo: {os.path.basename(arquivo_selecionado)}")
+                    janela.destroy()
+                else:
+                    messagebox.showerror("Erro", "Nenhum arquivo selecionado")
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao assinar arquivo: {str(e)}")
 
     botao_concluir = ctk.CTkButton(
         janela,
@@ -140,9 +149,12 @@ def abrir_janela_gerar_chaves():
         if senha.decode(encoding="utf-8").strip() == "":
             messagebox.showwarning("Senha vazia", "Por favor, digite uma senha.")
         else:
-            op.generate_keys(senha)
-            messagebox.showinfo("Sucesso", "Chaves geradas com sucesso!")
-            janela.destroy()
+            try:
+                op.generate_keys(senha)
+                messagebox.showinfo("Sucesso", "Chaves geradas com sucesso!")
+                janela.destroy()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao gerar chaves: {str(e)}")
 
     botao_gerar = ctk.CTkButton(
         janela,
@@ -201,14 +213,23 @@ def abrir_janela_verificacao():
         elif not arquivo_selecionado:
             messagebox.showwarning("Arquivo", "Nenhum arquivo foi selecionado.")
         else:
-            # Aqui entra a lógica real de verificação da assinatura
-            # Por enquanto, simulando:
-            resultado = True  # ou False
-            if resultado:
-                messagebox.showinfo("Assinatura Válida", "Arquivo assinado corretamente.")
-            else:
-                messagebox.showerror("Assinatura Inválida", "Arquivo não foi assinado corretamente.")
-            janela.destroy()
+            try:
+                # Verificar se o arquivo de assinatura existe
+                sig_path = arquivo_selecionado + ".sig"
+                if not os.path.exists(sig_path):
+                    messagebox.showerror("Erro", "Arquivo de assinatura não encontrado. O arquivo deve ter sido assinado primeiro.")
+                    return
+                
+                # Chamar a função de verificação do backend
+                resultado = op.verify_file(arquivo_selecionado, sig_path, chave_publica)
+                
+                if resultado:
+                    messagebox.showinfo("Assinatura Válida", "Arquivo assinado corretamente e a assinatura é válida.")
+                else:
+                    messagebox.showerror("Assinatura Inválida", "A assinatura do arquivo não é válida ou foi corrompida.")
+                janela.destroy()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao verificar assinatura: {str(e)}")
 
     botao_verificar_assinatura = ctk.CTkButton(
         janela,

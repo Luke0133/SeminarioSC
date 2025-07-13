@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from backend import signature as sign
+import signature as sign
 
 # Generates key pair with a given password
 def generate_keys(password : bytearray):
@@ -10,14 +10,19 @@ def generate_keys(password : bytearray):
     ser_priv = sign.serialize_private_key(priv, password)
     ser_pub = sign.serialize_public_key(pub)
 
-    # Saving .pem files
     now = datetime.now()
     now = now.strftime("%Y%m%d_%H%M%S")
-    pub_path = os.path.join("pub", f"{now + '-pub.pem'}")
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    projeto_dir = os.path.abspath(os.path.join(current_dir, ".."))
+    pasta_pub = os.path.abspath(os.path.join(projeto_dir, "pub"))
+    pasta_priv = os.path.abspath(os.path.join(projeto_dir, "priv"))
+    
+    pub_path = os.path.join(pasta_pub, f"{now + '-pub.pem'}")
     with open(pub_path, "wb") as f:
         f.write(ser_pub)
 
-    priv_path = os.path.join("priv", f"{now + '-priv.pem'}")
+    priv_path = os.path.join(pasta_priv, f"{now + '-priv.pem'}")
     with open(priv_path, "wb") as f:
         f.write(ser_priv)
 
@@ -41,7 +46,6 @@ def sign_file(password : bytearray, file_path,priv_path) -> bytes:
     sig_path = file_path + ".sig"
     with open(sig_path, "wb") as sig_file:
         sig_file.write(signature)
-
 
 def verify_file(file_path,sig_path,pub_path) -> bool:
     with open(pub_path, "rb") as f:

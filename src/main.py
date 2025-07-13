@@ -1,5 +1,12 @@
-from backend import operations as op
 import os
+import sys
+
+# Adicionar o diretório backend ao path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+backend_dir = os.path.join(current_dir, "backend")
+sys.path.insert(0, backend_dir)
+
+import operations as op
 
 if __name__ == "__main__":
     password = input("Input password: ")
