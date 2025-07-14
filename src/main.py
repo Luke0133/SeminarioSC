@@ -9,6 +9,10 @@ sys.path.insert(0, backend_dir)
 import operations as op
 
 if __name__ == "__main__":
+    from frontend import user_interface
+
+    # Teste por Interface de Comando
+    """
     password = input("Input password: ")
     op.generate_keys(bytearray(password.encode('utf-8')))
 
@@ -22,3 +26,4 @@ if __name__ == "__main__":
     path = os.path.join("pub", f"{pub}")
 
     print(op.verify_file("test/file.txt","test/file.txt.sig",path))
+    """
