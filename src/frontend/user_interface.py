@@ -191,7 +191,7 @@ def abrir_janela_verificacao():
         filepath = filedialog.askopenfilename(
             initialdir=pasta_pub,
             title="Selecione a chave pública (.pem)",
-            filetypes=[("Arquivos PEM", "*.pem")]
+            filetypes=[("Arquivos PEM", "*.pem")],
             parent=janela
         )
         if filepath:
