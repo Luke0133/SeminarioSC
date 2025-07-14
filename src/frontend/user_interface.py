@@ -80,7 +80,8 @@ def abrir_janela_assinatura():
         filepath = filedialog.askopenfilename(
             initialdir=pasta_priv,
             title="Selecione a chave privada (.pem)",
-            filetypes=[("Arquivos PEM", "*.pem")]
+            filetypes=[("Arquivos PEM", "*.pem")],
+            parent=janela
         )
         if filepath:
             chave_privada = filepath
@@ -191,6 +192,7 @@ def abrir_janela_verificacao():
             initialdir=pasta_pub,
             title="Selecione a chave pública (.pem)",
             filetypes=[("Arquivos PEM", "*.pem")]
+            parent=janela
         )
         if filepath:
             chave_publica = filepath
@@ -250,7 +252,8 @@ def choose_file():
     global arquivo_selecionado
     filepath = filedialog.askopenfilename(
         initialdir=os.path.expanduser("~/Downloads"),
-        title="Selecione o arquivo a ser assinado."
+        title="Selecione o arquivo a ser assinado.",
+        parent=janela
     )
     if filepath:
         arquivo_selecionado = filepath
