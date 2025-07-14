@@ -3,25 +3,6 @@ import os
 import sys
 from tkinter import filedialog, messagebox
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-backend_dir = os.path.join(current_dir, "..", "backend")
-sys.path.insert(0, backend_dir)
-
-import operations as op
-import signature as sign
-
-# App initialization
-app = ctk.CTk()
-app.title("Assinatura Digital")
-
-# Fullscreen
-w, h = app.winfo_screenwidth(), app.winfo_screenheight()
-app.geometry(f"{w}x{h}+0+0")
-
-# Grid layout configuration
-app.grid_columnconfigure(0, weight=1)
-app.grid_rowconfigure((0, 1, 2, 3, 4, 5), weight=1)
-
 # Important variables
 arquivo_selecionado = None
 chave_privada = None
@@ -31,19 +12,44 @@ pasta_pub = os.path.abspath(os.path.join(projeto_dir, "pub"))
 backend_dir = os.path.abspath(os.path.join(projeto_dir, "backend"))
 pasta_priv = os.path.abspath(os.path.join(projeto_dir, "priv"))
 
+sys.path.insert(0, backend_dir)
+
+import operations as op
+import signature as sign
+
+# App initialization
+app = ctk.CTk()
+app.title("Assinatura Digital")
+
+# Screen size
+'''
+w, h = app.winfo_screenwidth(), app.winfo_screenheight()
+app.geometry(f"{w}x{h}+0+0")
+'''
+app.geometry("800x450")
+
+# Grid layout configuration
+app.grid_columnconfigure(0, weight=1)
+app.grid_rowconfigure((0, 1, 2, 3, 4, 5), weight=1)
+
+# Frame configuration
+main_frame = ctk.CTkFrame(app, fg_color="transparent")
+main_frame.grid(row=0, column=0, rowspan=6, sticky="nsew", padx=60, pady=20)
+main_frame.grid_columnconfigure(0, weight=1)
+
 # Title
 title_label = ctk.CTkLabel(
-    app,
+    main_frame,
     text="Assinador Digital",
     font=ctk.CTkFont("Lato", 40, "bold")
 )
 title_label.grid(row=0, column=0, pady=(40, 20), sticky="n")
 
 # File label
-label_arquivo = ctk.CTkLabel(app, text="Nenhum arquivo selecionado.", font=ctk.CTkFont(size=16))
-label_arquivo.grid(row=1, column=0, pady=(10, 5))
+label_arquivo = ctk.CTkLabel(main_frame, text="Nenhum arquivo selecionado.", font=ctk.CTkFont(size=16))
+label_arquivo.grid(row=1, column=0, pady=(10, 15))
 
-# Atualiza estado dos botões
+# Update buttons state
 def atualizar_estado_botoes():
     if arquivo_selecionado:
         botao_assinar.configure(state="normal", fg_color="#03bb29", hover_color="#005227")
@@ -52,7 +58,7 @@ def atualizar_estado_botoes():
         botao_assinar.configure(state="disabled", fg_color="gray", hover_color="gray")
         botao_verificar.configure(state="disabled", fg_color="gray", hover_color="gray")
 
-# Janela de assinatura
+# Signature window
 def abrir_janela_assinatura():
     janela = ctk.CTkToplevel(app)
     janela.title("Assinar Arquivo")
@@ -128,7 +134,7 @@ def abrir_janela_assinatura():
     )
     botao_concluir.grid(row=4, column=0, pady=20)
 
-# Janela de geração de chaves
+# Key generation window
 def abrir_janela_gerar_chaves():
     janela = ctk.CTkToplevel(app)
     janela.title("Geração de Chaves")
@@ -170,6 +176,7 @@ def abrir_janela_gerar_chaves():
     )
     botao_gerar.grid(row=2, column=0, pady=10)
 
+# Key verification window
 def abrir_janela_verificacao():
     janela = ctk.CTkToplevel(app)
     janela.title("Verificar Assinatura")
@@ -219,13 +226,11 @@ def abrir_janela_verificacao():
             messagebox.showwarning("Arquivo", "Nenhum arquivo foi selecionado.")
         else:
             try:
-                # Verificar se o arquivo de assinatura existe
                 sig_path = arquivo_selecionado + ".sig"
                 if not os.path.exists(sig_path):
                     messagebox.showerror("Erro", "Arquivo de assinatura não encontrado. O arquivo deve ter sido assinado primeiro.", parent=janela)
                     return
 
-                # Chamar a função de verificação do backend
                 resultado = op.verify_file(arquivo_selecionado, sig_path, chave_publica)
 
                 if resultado:
@@ -247,7 +252,7 @@ def abrir_janela_verificacao():
     )
     botao_verificar_assinatura.grid(row=2, column=0, pady=20)
 
-# Selecionar arquivo
+# Select file
 def choose_file():
     global arquivo_selecionado
     filepath = filedialog.askopenfilename(
@@ -263,59 +268,57 @@ def choose_file():
         label_arquivo.configure(text="Nenhum arquivo selecionado")
     atualizar_estado_botoes()
 
-# Botão: Escolher arquivo
+# Buttons frame
+botoes_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+botoes_frame.grid(row=4, column=0, pady=(10, 10), padx=10, sticky="n")
+botoes_frame.grid_columnconfigure((0, 1), weight=1)
+
+# Buttons
 botao_arquivo = ctk.CTkButton(
-    app,
+    main_frame,
     text="Escolher Arquivo",
     command=choose_file,
-    width=200,
-    height=40,
+    width=220,
+    height=42,
     fg_color="#03bb29",
     hover_color="#005227"
 )
-botao_arquivo.grid(row=2, column=0, pady=(10, 5))
+botao_arquivo.grid(row=2, column=0, pady=(5, 10))
 
-# Botão: Gerar chaves (abaixo do escolher arquivo)
 botao_gerar = ctk.CTkButton(
-    app,
+    main_frame,
     text="Gerar Chaves",
     command=abrir_janela_gerar_chaves,
-    width=200,
-    height=40,
+    width=220,
+    height=42,
     fg_color="#03bb29",
     hover_color="#005227"
 )
-botao_gerar.grid(row=3, column=0, pady=(5, 10))
+botao_gerar.grid(row=3, column=0, pady=(5, 20))
 
-# Frame para os botões de ação
-botoes_frame = ctk.CTkFrame(app, fg_color="transparent")
-botoes_frame.grid(row=4, column=0, pady=(10, 10))
-
-# Botão: Assinar
 botao_assinar = ctk.CTkButton(
     botoes_frame,
     text="Assinar Arquivo",
     command=abrir_janela_assinatura,
-    width=200,
+    width=180,
     height=40,
     fg_color="gray",
     hover_color="gray",
     state="disabled"
 )
-botao_assinar.grid(row=0, column=0, padx=10)
+botao_assinar.grid(row=0, column=0, padx=20, pady=12)
 
-# Botão: Verificar
 botao_verificar = ctk.CTkButton(
     botoes_frame,
     text="Verificar Arquivo",
     command=abrir_janela_verificacao,
-    width=200,
+    width=180,
     height=40,
     fg_color="gray",
     hover_color="gray",
     state="disabled"
 )
-botao_verificar.grid(row=0, column=1, padx=10)
+botao_verificar.grid(row=0, column=1, padx=20, pady=12)
 
-# Loop
+# App Loop
 app.mainloop()
