@@ -253,7 +253,6 @@ def choose_file():
     filepath = filedialog.askopenfilename(
         initialdir=os.path.expanduser("~/Downloads"),
         title="Selecione o arquivo a ser assinado.",
-        parent=janela
     )
     if filepath:
         arquivo_selecionado = filepath
