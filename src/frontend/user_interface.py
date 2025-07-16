@@ -107,15 +107,17 @@ def abrir_janela_assinatura():
     )
     botao_chave.grid(row=3, column=0, pady=5)
     def concluir_assinatura():
-        assinatura = bytearray(entrada_senha.get().encode('utf-8'))
-        if assinatura.decode(encoding="utf-8").strip() == "":
+        senha = bytearray(entrada_senha.get().encode('utf-8'))
+        if senha.decode(encoding="utf-8").strip() == "":
             messagebox.showwarning("Senha Inválida", "Por favor, digite sua senha.")
         elif chave_privada is None:
             messagebox.showwarning("Chave Privada", "Por favor, selecione a chave privada.")
         else:
             try:
                 if arquivo_selecionado:
-                    op.sign_file(assinatura, arquivo_selecionado, chave_privada)
+                    op.sign_file(senha, arquivo_selecionado, chave_privada) 
+                    for i in range(0, len(senha)): # Limpa a senha 
+                        senha[i] = 0               # da memória
                     messagebox.showinfo("Sucesso", f"Arquivo assinado com sucesso.\nNome do arquivo: {os.path.basename(arquivo_selecionado)}", parent=janela)
                     janela.destroy()
                 else:
@@ -160,6 +162,8 @@ def abrir_janela_gerar_chaves():
         else:
             try:
                 op.generate_keys(senha)
+                for i in range(0, len(senha)): # Limpa a senha 
+                    senha[i] = 0               # da memória
                 messagebox.showinfo("Sucesso", "Chaves geradas com sucesso!", parent=janela)
                 janela.destroy()
             except Exception as e:
