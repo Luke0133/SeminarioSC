@@ -149,7 +149,7 @@ def load_private_key(serialized_key_file, password: bytearray) -> ec.EllipticCur
         serialized_key_data,
         password=bytes(password)
     )
-  
+
     for i in range(0, len(password)):
         password[i] = 0
 
@@ -162,9 +162,9 @@ def __hash(data_file) -> bytes:
 
     # Hashing file
     hasher = hashes.Hash(__relevant_hash)
-    byte: bytes = data_file.read(1)
+    byte: bytes = data_file.read(2048)
     while byte:
         hasher.update(byte)
-        byte = data_file.read(1)
+        byte = data_file.read(2048)
     digest = hasher.finalize()
     return digest
